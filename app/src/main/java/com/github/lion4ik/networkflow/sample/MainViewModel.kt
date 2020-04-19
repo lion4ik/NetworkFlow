@@ -11,9 +11,8 @@ import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
 
-    private val networkFlowChecker = NetworkFlow()
-
     fun startNetworkObserving(appContext: Context) {
+        val networkFlowChecker = NetworkFlow(appContext)
         viewModelScope.launch {
             networkFlowChecker.networkState(appContext)
                 .collect {

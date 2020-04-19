@@ -1,21 +1,18 @@
 package com.github.lion4ik.networkflow
 
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.net.ConnectivityManager
+import android.os.Build
 import android.os.PowerManager
+import com.github.lion4ik.networkflow.networkstate.LollipopObservingStrategy
+import com.github.lion4ik.networkflow.networkstate.NetworkObservingStrategy
+import com.github.lion4ik.networkflow.networkstate.PreLollipopNetworkStateObservingStrategy
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 
 @ExperimentalCoroutinesApi
 class NetworkFlow(
-    private val connectivityManager: ConnectivityManager,
+    connectivityManager: ConnectivityManager,
     private val powerManager: PowerManager
 ) {
 
@@ -24,15 +21,12 @@ class NetworkFlow(
         appContext.getSystemService(Context.POWER_SERVICE) as PowerManager
     )
 
-    fun networkState(appContext: Context): Flow<Connectivity> = channelFlow<Connectivity> {
-        val filter = IntentFilter()
-        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION)
-        val receiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
-                sendBlocking(Connectivity.create(appContext))
-            }
-        }
-        appContext.registerReceiver(receiver, filter)
-        awaitClose { appContext.unregisterReceiver(receiver) }
-    }.distinctUntilChanged()
+
+    private val networkObservingStrategy: NetworkObservingStrategy = when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP -> LollipopObservingStrategy(connectivityManager)
+        else -> PreLollipopNetworkStateObservingStrategy(connectivityManager)
+    }
+
+    fun networkState(appContext: Context): Flow<Connectivity> =
+        networkObservingStrategy.observeNetworkState(appContext)
 }
