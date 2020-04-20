@@ -1,7 +1,9 @@
 package com.github.lion4ik.networkflow.networkstate
 
+import android.annotation.TargetApi
 import android.content.Context
 import android.net.*
+import android.os.Build
 import com.github.lion4ik.networkflow.Connectivity
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
@@ -10,6 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 
+@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 @ExperimentalCoroutinesApi
 class LollipopObservingStrategy(private val connectivityManager: ConnectivityManager) :
     NetworkObservingStrategy {
