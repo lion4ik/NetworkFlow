@@ -13,7 +13,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         text.setOnClickListener {
-            mainViewModel.startNetworkObserving(applicationContext)
+//            mainViewModel.startNetworkObserving(applicationContext)
+            mainViewModel.startInternetObserving(applicationContext)
         }
     }
 }

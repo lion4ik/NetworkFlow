@@ -4,19 +4,33 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.lion4ik.networkflow.DefaultErrorHandler
 import com.github.lion4ik.networkflow.NetworkFlow
+import com.github.lion4ik.networkflow.internet.SocketInternetObservingStrategy
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 
+@ExperimentalCoroutinesApi
 class MainViewModel : ViewModel() {
 
     fun startNetworkObserving(appContext: Context) {
         val networkFlowChecker = NetworkFlow(appContext)
         viewModelScope.launch {
-            networkFlowChecker.networkState(appContext)
+            networkFlowChecker.observeNetworkState(appContext)
                 .collect {
-                Log.d("DEBUG", "value = $it")
+                    Log.d("DEBUG", "value = $it")
+                }
+        }
+    }
+
+    fun startInternetObserving(appContext: Context) {
+        val networkFlowChecker = NetworkFlow(appContext)
+        viewModelScope.launch {
+            networkFlowChecker.observeInternetConnectivity().flowOn(Dispatchers.IO).collect {
+                Log.d("DEBUG", "is connected = $it")
             }
         }
     }
