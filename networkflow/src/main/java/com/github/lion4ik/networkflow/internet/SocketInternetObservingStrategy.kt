@@ -30,7 +30,7 @@ class SocketInternetObservingStrategy : InternetObservingStrategy {
         }
     }.catch { errorHandler.handleError("observing error", it) }.distinctUntilChanged()
 
-    protected fun isConnected(
+    private fun isConnected(
         host: String, port: Int,
         timeoutInMs: Int, errorHandler: ErrorHandler
     ): Boolean =

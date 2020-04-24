@@ -7,6 +7,7 @@ import android.os.PowerManager
 import com.github.lion4ik.networkflow.internet.InternetObservingStrategy
 import com.github.lion4ik.networkflow.internet.SocketInternetObservingStrategy
 import com.github.lion4ik.networkflow.networkstate.LollipopObservingStrategy
+import com.github.lion4ik.networkflow.networkstate.MarshmallowObservingStrategy
 import com.github.lion4ik.networkflow.networkstate.NetworkObservingStrategy
 import com.github.lion4ik.networkflow.networkstate.PreLollipopNetworkStateObservingStrategy
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -34,9 +35,8 @@ class NetworkFlow(
 
     @ExperimentalCoroutinesApi
     private val networkObservingStrategy: NetworkObservingStrategy = when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP -> LollipopObservingStrategy(
-            connectivityManager
-        )
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> MarshmallowObservingStrategy(connectivityManager, powerManager)
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP -> LollipopObservingStrategy(connectivityManager)
         else -> PreLollipopNetworkStateObservingStrategy(connectivityManager)
     }
 
