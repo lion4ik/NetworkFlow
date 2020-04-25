@@ -1,6 +1,6 @@
 package com.github.lion4ik.networkflow.internet
 
-import com.github.lion4ik.networkflow.ErrorHandler
+import com.github.lion4ik.networkflow.error.ErrorHandler
 import kotlinx.coroutines.flow.Flow
 
 interface InternetObservingStrategy {

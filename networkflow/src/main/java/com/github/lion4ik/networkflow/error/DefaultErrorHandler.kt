@@ -1,4 +1,4 @@
-package com.github.lion4ik.networkflow
+package com.github.lion4ik.networkflow.error
 
 import android.util.Log
 import com.github.lion4ik.networkflow.NetworkFlow.Companion.LOG_TAG

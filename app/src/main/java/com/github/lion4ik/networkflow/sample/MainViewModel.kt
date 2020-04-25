@@ -4,9 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.lion4ik.networkflow.DefaultErrorHandler
 import com.github.lion4ik.networkflow.NetworkFlow
-import com.github.lion4ik.networkflow.internet.SocketInternetObservingStrategy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect

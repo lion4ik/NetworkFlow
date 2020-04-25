@@ -4,6 +4,8 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Build
 import android.os.PowerManager
+import com.github.lion4ik.networkflow.error.DefaultErrorHandler
+import com.github.lion4ik.networkflow.error.ErrorHandler
 import com.github.lion4ik.networkflow.internet.InternetObservingStrategy
 import com.github.lion4ik.networkflow.internet.SocketInternetObservingStrategy
 import com.github.lion4ik.networkflow.networkstate.LollipopObservingStrategy

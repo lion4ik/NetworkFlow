@@ -1,4 +1,4 @@
-package com.github.lion4ik.networkflow
+package com.github.lion4ik.networkflow.error
 
 interface ErrorHandler {
 
