@@ -1,13 +1,9 @@
 language: android
-sudo: required
-jdk: oraclejdk8
+dist: trusty
 android:
   components:
-    - tools
-    - platform-tools
     - build-tools-29.0.3
     - android-29
-licenses:
-  - android-sdk-license-.+
+    - extra
 script:
   - "./gradlew clean build assemble -PdisablePreDex --stacktrace"
