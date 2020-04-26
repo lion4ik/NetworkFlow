@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 
 @TargetApi(Build.VERSION_CODES.M)
 @ExperimentalCoroutinesApi
-open class MarshmallowObservingStrategy(
+class MarshmallowNetworkStateObservingStrategy(
     private val connectivityManager: ConnectivityManager,
     private val powerManager: PowerManager
 ) : NetworkObservingStrategy {

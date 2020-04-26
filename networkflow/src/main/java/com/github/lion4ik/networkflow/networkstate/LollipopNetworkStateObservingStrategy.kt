@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 @ExperimentalCoroutinesApi
-class LollipopObservingStrategy(private val connectivityManager: ConnectivityManager) :
+class LollipopNetworkStateObservingStrategy(private val connectivityManager: ConnectivityManager) :
     NetworkObservingStrategy {
 
     override fun observeNetworkState(appContext: Context): Flow<Connectivity> =

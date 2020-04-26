@@ -15,6 +15,14 @@ android {
         consumerProguardFiles "consumer-rules.pro"
     }
 
+    testOptions {
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
+        unitTests.all {
+            systemProperty 'robolectric.enabledSdks', '28'
+        }
+        unitTests.includeAndroidResources = true
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -37,4 +45,6 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlin_coroutines_version"
 
     testImplementation "junit:junit:$junit_version"
+    testImplementation "io.mockk:mockk:1.10.0"
+    testImplementation "org.robolectric:robolectric:4.3.1"
 }
