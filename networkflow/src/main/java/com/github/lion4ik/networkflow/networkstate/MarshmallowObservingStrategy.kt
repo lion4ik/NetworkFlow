@@ -13,6 +13,7 @@ import android.os.Build
 import android.os.PowerManager
 import com.github.lion4ik.networkflow.Connectivity
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.Flow
@@ -26,20 +27,20 @@ open class MarshmallowObservingStrategy(
     private val powerManager: PowerManager
 ) : NetworkObservingStrategy {
 
-    override fun observeNetworkState(appContext: Context): Flow<Connectivity> = channelFlow<Connectivity> {
+    override fun observeNetworkState(appContext: Context): Flow<Connectivity> = channelFlow {
+        sendIfUnavailable(this@channelFlow)
+
         val connectivityCallback = object : ConnectivityManager.NetworkCallback() {
 
             override fun onCapabilitiesChanged(
                 network: Network,
                 networkCapabilities: NetworkCapabilities
             ) {
-                sendBlocking(Connectivity.fromNetworkCapabilities(networkCapabilities))
+                sendBlocking(Connectivity.fromNetworkCapabilities(networkCapabilities, connectivityManager.activeNetworkInfo))
             }
 
             override fun onLost(network: Network) {
-                if (connectivityManager.activeNetwork == null) {
-                    sendBlocking(Connectivity.unavailable())
-                }
+                sendIfUnavailable(this@channelFlow)
             }
         }
 
@@ -63,6 +64,12 @@ open class MarshmallowObservingStrategy(
             appContext.unregisterReceiver(idleReceiver)
         }
     }.distinctUntilChanged()
+
+    private fun sendIfUnavailable(sendChannel: SendChannel<Connectivity>) {
+        if (connectivityManager.activeNetwork == null) {
+            sendChannel.sendBlocking(Connectivity.unavailable())
+        }
+    }
 
     private fun isIdleMode(context: Context): Boolean {
         val packageName = context.packageName

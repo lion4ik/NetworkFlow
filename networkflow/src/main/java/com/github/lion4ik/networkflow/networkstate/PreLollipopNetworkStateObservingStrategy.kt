@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @ExperimentalCoroutinesApi
 class PreLollipopNetworkStateObservingStrategy(private val connectivityManager: ConnectivityManager): NetworkObservingStrategy {
 
+    @SuppressWarnings("deprecation")
     override fun observeNetworkState(appContext: Context): Flow<Connectivity> = channelFlow<Connectivity> {
         val filter = IntentFilter()
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION)

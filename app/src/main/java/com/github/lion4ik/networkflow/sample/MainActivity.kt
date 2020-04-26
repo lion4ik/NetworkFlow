@@ -4,7 +4,9 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalCoroutinesApi
 class MainActivity : AppCompatActivity() {
 
     private val mainViewModel: MainViewModel by viewModels()
@@ -12,9 +14,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        text.setOnClickListener {
+        btnNetworkStateObserve.setOnClickListener {
             mainViewModel.startNetworkObserving(applicationContext)
-//            mainViewModel.startInternetObserving(applicationContext)
+        }
+        btnInternetStateObserver.setOnClickListener {
+            mainViewModel.startInternetObserving(applicationContext)
         }
     }
 }

@@ -1,37 +1,59 @@
 package com.github.lion4ik.networkflow
 
+import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.NetworkInfo
+import android.os.Build
 
 data class Connectivity(
-    val type: Int = UNKNOWN_TYPE,
-    val typeName: String = "NONE"
+    val type: Set<ConnectionType> = setOf(ConnectionType.NONE),
+    val isRoaming: Boolean = false
 ) {
 
+    fun hasAnyNetwork(): Boolean =
+        type.any { it != ConnectionType.NONE }
+
     enum class ConnectionType {
+        NONE,
         WIFI,
-        CELLULAR
+        CELLULAR,
+        ETHERNET
     }
 
     companion object {
-        const val UNKNOWN_TYPE = -1
 
+        @SuppressWarnings("deprecation")
+        private fun fromOldConnectionType(networkInfo: NetworkInfo): ConnectionType =
+            when (networkInfo.type) {
+                ConnectivityManager.TYPE_MOBILE -> ConnectionType.CELLULAR
+                ConnectivityManager.TYPE_WIFI -> ConnectionType.WIFI
+                ConnectivityManager.TYPE_ETHERNET -> ConnectionType.ETHERNET
+                else -> ConnectionType.NONE
+            }
+
+        @SuppressWarnings("deprecation")
         fun fromNetworkInfo(networkInfo: NetworkInfo?): Connectivity =
             if (networkInfo == null) {
                 Connectivity()
             } else {
-                Connectivity(networkInfo.type, networkInfo.typeName)
+                Connectivity(setOf(fromOldConnectionType(networkInfo)), networkInfo.isRoaming)
             }
 
-        fun fromNetworkCapabilities(networkCapabilities: NetworkCapabilities): Connectivity = when {
-            networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ->
-                Connectivity(NetworkCapabilities.TRANSPORT_WIFI, "WIFI")
-            networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ->
-                Connectivity(NetworkCapabilities.TRANSPORT_CELLULAR, "MOBILE")
-            else -> Connectivity(UNKNOWN_TYPE, "NONE")
+        fun fromNetworkCapabilities(networkCapabilities: NetworkCapabilities, networkInfo: NetworkInfo?): Connectivity {
+            val networkTypes = mutableSetOf<ConnectionType>()
+            networkCapabilities.takeIf { it.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) }?.run { networkTypes.add(ConnectionType.CELLULAR) }
+            networkCapabilities.takeIf { it.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) }?.run { networkTypes.add(ConnectionType.WIFI) }
+            networkCapabilities.takeIf { it.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) }?.run { networkTypes.add(ConnectionType.ETHERNET) }
+            networkTypes.takeIf { it.isEmpty() }?.run { networkTypes.add(ConnectionType.NONE) }
+            val isRoaming = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                !networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_ROAMING)
+            } else {
+                networkInfo?.isRoaming ?: false
+            }
+            return Connectivity(networkTypes, isRoaming)
         }
 
-        fun unavailable(): Connectivity = Connectivity(UNKNOWN_TYPE, "NONE")
+        fun unavailable(): Connectivity = Connectivity()
 
     }
 }
