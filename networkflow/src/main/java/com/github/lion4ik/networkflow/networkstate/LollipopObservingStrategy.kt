@@ -19,7 +19,7 @@ class LollipopObservingStrategy(private val connectivityManager: ConnectivityMan
     NetworkObservingStrategy {
 
     override fun observeNetworkState(appContext: Context): Flow<Connectivity> =
-        channelFlow {
+        channelFlow<Connectivity> {
             sendIfUnavailable(this@channelFlow)
 
             val connectivityCallback = object : ConnectivityManager.NetworkCallback() {

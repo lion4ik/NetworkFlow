@@ -27,7 +27,7 @@ open class MarshmallowObservingStrategy(
     private val powerManager: PowerManager
 ) : NetworkObservingStrategy {
 
-    override fun observeNetworkState(appContext: Context): Flow<Connectivity> = channelFlow {
+    override fun observeNetworkState(appContext: Context): Flow<Connectivity> = channelFlow<Connectivity> {
         sendIfUnavailable(this@channelFlow)
 
         val connectivityCallback = object : ConnectivityManager.NetworkCallback() {
