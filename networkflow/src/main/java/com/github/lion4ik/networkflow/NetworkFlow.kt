@@ -12,7 +12,6 @@ import com.github.lion4ik.networkflow.networkstate.LollipopNetworkStateObserving
 import com.github.lion4ik.networkflow.networkstate.MarshmallowNetworkStateObservingStrategy
 import com.github.lion4ik.networkflow.networkstate.NetworkObservingStrategy
 import com.github.lion4ik.networkflow.networkstate.PreLollipopNetworkStateObservingStrategy
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import java.net.HttpURLConnection
 
@@ -35,18 +34,20 @@ class NetworkFlow(
         internetObservingSettings
     )
 
-    @ExperimentalCoroutinesApi
     private val networkObservingStrategy: NetworkObservingStrategy = when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> MarshmallowNetworkStateObservingStrategy(connectivityManager, powerManager)
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP -> LollipopNetworkStateObservingStrategy(connectivityManager)
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> MarshmallowNetworkStateObservingStrategy(
+            connectivityManager,
+            powerManager
+        )
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP -> LollipopNetworkStateObservingStrategy(
+            connectivityManager
+        )
         else -> PreLollipopNetworkStateObservingStrategy(connectivityManager)
     }
 
-    @ExperimentalCoroutinesApi
     fun observeNetworkState(appContext: Context): Flow<Connectivity> =
         networkObservingStrategy.observeNetworkState(appContext)
 
-    @ExperimentalCoroutinesApi
     fun observeInternetConnectivity(): Flow<Boolean> = with(internetObservingSettings) {
         internetObservingStrategy.observeInternetConnectivity(
             interval,

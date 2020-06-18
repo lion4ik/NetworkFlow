@@ -12,7 +12,6 @@ import android.net.NetworkRequest
 import android.os.Build
 import android.os.PowerManager
 import com.github.lion4ik.networkflow.Connectivity
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
@@ -21,8 +20,7 @@ import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 @TargetApi(Build.VERSION_CODES.M)
-@ExperimentalCoroutinesApi
-class MarshmallowNetworkStateObservingStrategy(
+internal class MarshmallowNetworkStateObservingStrategy(
     private val connectivityManager: ConnectivityManager,
     private val powerManager: PowerManager
 ) : NetworkObservingStrategy {

@@ -17,9 +17,6 @@ android {
 
     testOptions {
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
-        unitTests.all {
-            systemProperty 'robolectric.enabledSdks', '28'
-        }
         unitTests.includeAndroidResources = true
     }
 
@@ -35,6 +32,7 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+        freeCompilerArgs = ["-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi"]
     }
 }
 
@@ -45,6 +43,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlin_coroutines_version"
 
     testImplementation "junit:junit:$junit_version"
+    testImplementation "androidx.test.ext:junit:$junit_runner_version"
     testImplementation "io.mockk:mockk:1.10.0"
-    testImplementation "org.robolectric:robolectric:4.3.1"
+    androidTestUtil "androidx.test:orchestrator:1.2.0"
 }

@@ -2,10 +2,11 @@ package com.github.lion4ik.networkflow.networkstate
 
 import android.annotation.TargetApi
 import android.content.Context
-import android.net.*
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
 import android.os.Build
 import com.github.lion4ik.networkflow.Connectivity
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
@@ -14,8 +15,10 @@ import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-@ExperimentalCoroutinesApi
-class LollipopNetworkStateObservingStrategy(private val connectivityManager: ConnectivityManager) :
+internal class LollipopNetworkStateObservingStrategy(
+    private val connectivityManager: ConnectivityManager,
+    private val networkRequestFactory: NetworkRequestFactory = NetworkRequestFactory()
+) :
     NetworkObservingStrategy {
 
     override fun observeNetworkState(appContext: Context): Flow<Connectivity> =
@@ -28,7 +31,12 @@ class LollipopNetworkStateObservingStrategy(private val connectivityManager: Con
                     network: Network,
                     networkCapabilities: NetworkCapabilities
                 ) {
-                    sendBlocking(Connectivity.fromNetworkCapabilities(networkCapabilities, connectivityManager.activeNetworkInfo))
+                    sendBlocking(
+                        Connectivity.fromNetworkCapabilities(
+                            networkCapabilities,
+                            connectivityManager.activeNetworkInfo
+                        )
+                    )
                 }
 
                 @SuppressWarnings("deprecation")
@@ -37,10 +45,10 @@ class LollipopNetworkStateObservingStrategy(private val connectivityManager: Con
                 }
             }
 
-            val request =
-                NetworkRequest.Builder().addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-                    .addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED)
-                    .build()
+            val request = networkRequestFactory.createNetworkRequest(NetworkCapabilities.NET_CAPABILITY_INTERNET, NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED)
+//                NetworkRequest.Builder().addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+//                    .addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED)
+//                    .build()
             connectivityManager.registerNetworkCallback(request, connectivityCallback)
             awaitClose { connectivityManager.unregisterNetworkCallback(connectivityCallback) }
         }.distinctUntilChanged()
