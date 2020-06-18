@@ -46,9 +46,6 @@ internal class LollipopNetworkStateObservingStrategy(
             }
 
             val request = networkRequestFactory.createNetworkRequest(NetworkCapabilities.NET_CAPABILITY_INTERNET, NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED)
-//                NetworkRequest.Builder().addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-//                    .addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED)
-//                    .build()
             connectivityManager.registerNetworkCallback(request, connectivityCallback)
             awaitClose { connectivityManager.unregisterNetworkCallback(connectivityCallback) }
         }.distinctUntilChanged()
