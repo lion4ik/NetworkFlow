@@ -14,13 +14,12 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 
 internal class PreLollipopNetworkStateObservingStrategy(
     private val connectivityManager: ConnectivityManager,
-    private val filter: IntentFilter = IntentFilter()
+    private val filter: IntentFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
 ) : NetworkObservingStrategy {
 
     @SuppressWarnings("deprecation")
     override fun observeNetworkState(appContext: Context): Flow<Connectivity> =
         channelFlow<Connectivity> {
-            filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION)
             val receiver = object : BroadcastReceiver() {
                 override fun onReceive(context: Context, intent: Intent) {
                     sendBlocking(Connectivity.fromNetworkInfo(connectivityManager.activeNetworkInfo))

@@ -4,9 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import android.net.Network
 import android.net.NetworkInfo
 import android.net.NetworkRequest
+import android.os.PowerManager
 import com.github.lion4ik.networkflow.networkstate.LollipopNetworkStateObservingStrategy
+import com.github.lion4ik.networkflow.networkstate.MarshmallowNetworkStateObservingStrategy
 import com.github.lion4ik.networkflow.networkstate.NetworkRequestFactory
 import com.github.lion4ik.networkflow.networkstate.PreLollipopNetworkStateObservingStrategy
 import io.mockk.MockKAnnotations
@@ -28,21 +31,46 @@ class NetworkStateObservingStrategiesTest {
     private lateinit var connectivityManager: ConnectivityManager
 
     @MockK
+    private lateinit var powerManager: PowerManager
+
+    @MockK
     private lateinit var appContext: Context
+
+    @MockK
+    private lateinit var networkCapabilitiesFactory: NetworkRequestFactory
+
+    @MockK
+    private lateinit var intentFilter: IntentFilter
 
     @Before
     fun initTest() {
         MockKAnnotations.init(this, relaxUnitFun = true)
+        val networkInfo = mockk<NetworkInfo>()
+        val activeNetwork = mockk<Network>()
+        val intent = mockk<Intent>()
+        val networkRequest = mockk<NetworkRequest>()
+        every {
+            connectivityManager.registerNetworkCallback(
+                any(),
+                any<ConnectivityManager.NetworkCallback>()
+            )
+        } returns Unit
+        every { connectivityManager.unregisterNetworkCallback(any<ConnectivityManager.NetworkCallback>()) } returns Unit
+        every { connectivityManager.activeNetworkInfo } returns networkInfo
+        every { connectivityManager.activeNetwork } returns activeNetwork
+        every {
+            networkCapabilitiesFactory.createNetworkRequest(
+                any(),
+                any()
+            )
+        } returns networkRequest
+        every { appContext.registerReceiver(any(), any()) } returns intent
+        every { appContext.unregisterReceiver(any()) } returns Unit
     }
 
     @Test
-    fun `test PreLollipopNetworkStateObservingStrategy receiver registered on observe and unregistered on cancel coroutine scope`() =
+    fun `test PreLollipopNetworkStateObservingStrategy check receiver registered and unregistered called when cancel coroutine scope`() =
         runBlocking {
-            val intent = mockk<Intent>()
-            val intentFilter = mockk<IntentFilter>()
-            every { intentFilter.addAction(any()) } returns Unit
-            every { appContext.registerReceiver(any(), any()) } returns intent
-            every { appContext.unregisterReceiver(any()) } returns Unit
             val preLollipopNetworkStateObservingStrategy =
                 PreLollipopNetworkStateObservingStrategy(connectivityManager, intentFilter)
 
@@ -61,25 +89,8 @@ class NetworkStateObservingStrategiesTest {
         }
 
     @Test
-    fun `test LollipopNetworkStateObservingStrategy registerNetworkCallback called when observed and unregisterNetworkCallback called when cancel coroutine scope`() =
+    fun `test LollipopNetworkStateObservingStrategy check registerNetworkCallback and unregisterNetworkCallback called when cancel coroutine scope`() =
         runBlocking {
-            val networkInfo = mockk<NetworkInfo>()
-            val networkCapabilitiesFactory = mockk<NetworkRequestFactory>()
-            val networkRequest = mockk<NetworkRequest>()
-            every {
-                connectivityManager.registerNetworkCallback(
-                    any(),
-                    any<ConnectivityManager.NetworkCallback>()
-                )
-            } returns Unit
-            every { connectivityManager.unregisterNetworkCallback(any<ConnectivityManager.NetworkCallback>()) } returns Unit
-            every { connectivityManager.activeNetworkInfo } returns networkInfo
-            every {
-                networkCapabilitiesFactory.createNetworkRequest(
-                    any(),
-                    any()
-                )
-            } returns networkRequest
             val lollipopNetworkStateObservingStrategy =
                 LollipopNetworkStateObservingStrategy(
                     connectivityManager,
@@ -88,6 +99,32 @@ class NetworkStateObservingStrategiesTest {
             val deferred = async {
 
                 lollipopNetworkStateObservingStrategy.observeNetworkState(appContext).collect {
+
+                }
+            }
+            delay(100)
+            deferred.cancelAndJoin()
+            verify {
+                connectivityManager.registerNetworkCallback(
+                    any(),
+                    any<ConnectivityManager.NetworkCallback>()
+                )
+                connectivityManager.unregisterNetworkCallback(any<ConnectivityManager.NetworkCallback>())
+            }
+        }
+
+    @Test
+    fun `test MarshmallowNetworkStateObservingStrategy check register and unregister when cancel coroutine scope`() =
+        runBlocking {
+            val marshmallowNetworkStateObservingStrategy = MarshmallowNetworkStateObservingStrategy(
+                connectivityManager,
+                powerManager,
+                networkCapabilitiesFactory,
+                intentFilter
+            )
+            val deferred = async {
+
+                marshmallowNetworkStateObservingStrategy.observeNetworkState(appContext).collect {
 
                 }
             }

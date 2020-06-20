@@ -8,7 +8,6 @@ import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
-import android.net.NetworkRequest
 import android.os.Build
 import android.os.PowerManager
 import com.github.lion4ik.networkflow.Connectivity
@@ -22,7 +21,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @TargetApi(Build.VERSION_CODES.M)
 internal class MarshmallowNetworkStateObservingStrategy(
     private val connectivityManager: ConnectivityManager,
-    private val powerManager: PowerManager
+    private val powerManager: PowerManager,
+    private val networkRequestFactory: NetworkRequestFactory = NetworkRequestFactory(),
+    private val intentFilter: IntentFilter = IntentFilter(PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED)
 ) : NetworkObservingStrategy {
 
     override fun observeNetworkState(appContext: Context): Flow<Connectivity> = channelFlow<Connectivity> {
@@ -49,13 +50,9 @@ internal class MarshmallowNetworkStateObservingStrategy(
                 }
             }
         }
-        val filter = IntentFilter(PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED)
-        appContext.registerReceiver(idleReceiver, filter)
+        appContext.registerReceiver(idleReceiver, intentFilter)
 
-        val request =
-            NetworkRequest.Builder().addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-                .addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED)
-                .build()
+        val request = networkRequestFactory.createNetworkRequest(NetworkCapabilities.NET_CAPABILITY_INTERNET, NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED)
         connectivityManager.registerNetworkCallback(request, connectivityCallback)
         awaitClose {
             connectivityManager.unregisterNetworkCallback(connectivityCallback)
