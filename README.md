@@ -29,5 +29,28 @@ It returns `Connectivity` to collector that stores set of connection type and ro
 
 It returns boolean to collector which indicates if connected or not connected to the internet.
 
+### Usage
+
+Add specific maven repository to repositories closure. For example, you should add it to root
+of `build.gradle`:
+
+```groovy
+allprojects {
+  repositories {
+    maven { url "https://dl.bintray.com/lion4ik/maven" }
+  }
+}
+```
+Add dependency:
+
+```groovy
+dependencies {
+   implementation "com.github.lion4ik:NetworkFlow:$version"
+}
+```
+
+where recommended `$version` is the latest from Download badge [ ![Download](https://api.bintray.com/packages/lion4ik/maven/NetworkFlow/images/download.svg) ](https://bintray.com/lion4ik/maven/NetworkFlow/_latestVersion)
+
+
 ### Note
 This solution was inspired by https://github.com/pwittchen/ReactiveNetwork which is based on RxJava. The idea is to impmelent the same stuff based on coroutines.
