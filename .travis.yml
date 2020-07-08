@@ -8,5 +8,7 @@ android:
   licenses:
     - 'android-sdk-license-.+'
     - 'google-gdk-license-.+'
+before_script:
+    - touch local.properties
 script:
   - "./gradlew clean build assemble -PdisablePreDex --stacktrace"
