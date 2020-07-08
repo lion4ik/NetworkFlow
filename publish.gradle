@@ -1,0 +1,50 @@
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
+publishing {
+    publications {
+        Production(MavenPublication) {
+            artifact("$buildDir/outputs/aar/networkflow-release.aar")
+            groupId 'com.github.lion4ik'
+            artifactId 'NetworkFlow'
+            version project.library_version_name
+
+            pom.withXml {
+                def dependenciesNode = asNode().appendNode('dependencies')
+
+                // Iterate over the implementation dependencies (we don't want the test ones), adding a <dependency> node for each
+                configurations.implementation.allDependencies.each {
+                    // Ensure dependencies such as fileTree are not included in the pom.
+                    if (it.name != 'unspecified') {
+                        def dependencyNode = dependenciesNode.appendNode('dependency')
+                        dependencyNode.appendNode('groupId', it.group)
+                        dependencyNode.appendNode('artifactId', it.name)
+                        dependencyNode.appendNode('version', it.version)
+                    }
+                }
+            }
+        }
+    }
+}
+
+bintray {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file("local.properties").newDataInputStream())
+
+    user = properties.getProperty('bintray.user')
+    key = properties.getProperty('bintray.key')
+    pkg {
+        repo = 'maven'
+        name = 'NetworkFlow'
+        userOrg = 'lion4ik'
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/lion4ik/NetworkFlow.git'
+        version {
+            name = project.library_version_name
+            desc = 'NetworkFlow is a network state based on coroutine\'s flow. It\'s designed to listen network state changes.'
+            vcsTag = project.library_version_name
+        }
+    }
+
+    publications = ['Production']
+}

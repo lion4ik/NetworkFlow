@@ -3,7 +3,7 @@ buildscript {
     ext.min_sdk_version = 21
     ext.target_sdk_version = 29
     ext.library_version_code = 1
-    ext.library_version_name = "0.1"
+    ext.library_version_name = "0.1.0"
 
     ext.kotlin_version = "1.3.72"
     ext.kotlin_coroutines_version = "1.3.5"
@@ -16,12 +16,11 @@ buildscript {
         google()
         jcenter()
         mavenCentral()
-        maven { url "https://jitpack.io" }
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.1.0-alpha09'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5'
     }
 }
 
@@ -30,8 +29,6 @@ allprojects {
         google()
         jcenter()
         mavenCentral()
-        maven { url "https://jitpack.io" }
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     }
 }
 
