@@ -53,4 +53,4 @@ where recommended `$version` is the latest from Download badge [ ![Download](htt
 
 
 ### Note
-This solution was inspired by https://github.com/pwittchen/ReactiveNetwork which is based on RxJava. The idea is to impmelent the same stuff based on coroutines.
+This solution was inspired by https://github.com/pwittchen/ReactiveNetwork which is based on RxJava. The idea is to implement the same stuff based on coroutines.
