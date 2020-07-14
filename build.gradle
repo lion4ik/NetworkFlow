@@ -3,7 +3,7 @@ buildscript {
     ext.min_sdk_version = 21
     ext.target_sdk_version = 29
     ext.library_version_code = 1
-    ext.library_version_name = "0.1.0"
+    ext.library_version_name = "0.1.1"
 
     ext.kotlin_version = "1.3.72"
     ext.kotlin_coroutines_version = "1.3.5"

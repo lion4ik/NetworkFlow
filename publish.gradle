@@ -4,7 +4,15 @@ apply plugin: 'com.jfrog.bintray'
 publishing {
     publications {
         Production(MavenPublication) {
+            task androidSourcesJar(type: Jar) {
+                classifier = 'sources'
+                from android.sourceSets.main.java.sourceFiles
+            }
+
             artifact("$buildDir/outputs/aar/networkflow-release.aar")
+            artifact androidSourcesJar {
+                classifier "sources"
+            }
             groupId 'com.github.lion4ik'
             artifactId 'NetworkFlow'
             version project.library_version_name
