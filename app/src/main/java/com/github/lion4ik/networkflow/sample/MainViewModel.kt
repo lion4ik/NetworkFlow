@@ -1,6 +1,5 @@
 package com.github.lion4ik.networkflow.sample
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,28 +9,22 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 
-class MainViewModel : ViewModel() {
+class MainViewModel(private val networkFlowChecker: NetworkFlow) : ViewModel() {
 
-    fun startNetworkObserving(appContext: Context) {
-        val networkFlowChecker = NetworkFlow(appContext)
+    fun startNetworkObserving() {
         viewModelScope.launch {
-            networkFlowChecker.observeNetworkState(appContext)
+            networkFlowChecker.observeNetworkState()
                 .collect {
                     Log.d("DEBUG", "value = $it")
                 }
         }
     }
 
-    fun startInternetObserving(appContext: Context) {
-        val networkFlowChecker = NetworkFlow(appContext)
+    fun startInternetObserving() {
         viewModelScope.launch {
             networkFlowChecker.observeInternetConnectivity().flowOn(Dispatchers.IO).collect {
                 Log.d("DEBUG", "is connected = $it")
             }
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
     }
 }

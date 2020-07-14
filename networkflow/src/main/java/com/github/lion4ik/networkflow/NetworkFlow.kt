@@ -17,7 +17,7 @@ import java.net.HttpURLConnection
 
 class NetworkFlow(
     connectivityManager: ConnectivityManager,
-    powerManager: PowerManager,
+    private val appContext: Context,
     private val internetObservingSettings: InternetObservingSettings = InternetObservingSettings()
 ) {
 
@@ -30,9 +30,11 @@ class NetworkFlow(
         internetObservingSettings: InternetObservingSettings = InternetObservingSettings()
     ) : this(
         appContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager,
-        appContext.getSystemService(Context.POWER_SERVICE) as PowerManager,
+        appContext,
         internetObservingSettings
     )
+
+    private val powerManager: PowerManager by lazy { appContext.getSystemService(Context.POWER_SERVICE) as PowerManager }
 
     private val networkObservingStrategy: NetworkObservingStrategy = when {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> MarshmallowNetworkStateObservingStrategy(
@@ -45,7 +47,7 @@ class NetworkFlow(
         else -> PreLollipopNetworkStateObservingStrategy(connectivityManager)
     }
 
-    fun observeNetworkState(appContext: Context): Flow<Connectivity> =
+    fun observeNetworkState(): Flow<Connectivity> =
         networkObservingStrategy.observeNetworkState(appContext)
 
     fun observeInternetConnectivity(): Flow<Boolean> = with(internetObservingSettings) {
