@@ -5,8 +5,8 @@ buildscript {
     ext.library_version_code = 1
     ext.library_version_name = "0.1.1"
 
-    ext.kotlin_version = "1.4.20"
-    ext.kotlin_coroutines_version = "1.4.2"
+    ext.kotlin_version = "1.6.10"
+    ext.kotlin_coroutines_version = "1.6.1"
     ext.koin_version = "2.2.1"
     ext.android_arch_lifecycle = '2.2.0'
     ext.junit_version = "4.13.1"
@@ -19,7 +19,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.0-alpha10'
+        classpath 'com.android.tools.build:gradle:7.3.0-alpha07'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5'
     }
