@@ -5,7 +5,7 @@ buildscript {
     ext.library_version_code = 1
     ext.library_version_name = "0.1.1"
 
-    ext.kotlin_version = "1.6.10"
+    ext.kotlin_version = "1.7.10"
     ext.kotlin_coroutines_version = "1.6.1"
     ext.koin_version = "2.2.1"
     ext.android_arch_lifecycle = '2.2.0'
