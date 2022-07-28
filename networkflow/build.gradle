@@ -46,6 +46,6 @@ dependencies {
 
     testImplementation "junit:junit:$junit_version"
     testImplementation "androidx.test.ext:junit:$junit_runner_version"
-    testImplementation "io.mockk:mockk:1.12.3"
+    testImplementation "io.mockk:mockk:1.12.5"
     androidTestUtil "androidx.test:orchestrator:1.4.1"
 }
